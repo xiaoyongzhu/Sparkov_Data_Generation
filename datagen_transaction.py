@@ -1,4 +1,5 @@
 from __future__ import division
+from os import sep
 import random
 import pandas as pd
 from pandas import *
@@ -12,6 +13,7 @@ import math
 from random import sample
 from random import randint
 from faker import Faker
+
 
 
 import profile_weights
@@ -98,8 +100,8 @@ class Customer(object):
         self.attrs = self.clean_line(self.customer)
         self.fraud_dates = []
 
-    def print_trans(self, trans, is_fraud, fraud_dates):
-
+    def print_trans_and_append_df(self, trans, is_fraud, fraud_dates):
+        global global_df
         is_traveling = trans[1]
         travel_max = trans[2]
 
@@ -136,10 +138,25 @@ class Customer(object):
 
             if is_fraud == 0 and groups[1] not in fraud_dates:
             # if cust.attrs['profile'] == "male_30_40_smaller_cities.json":
-                print(self.customer.replace('\n','') + '|' + t + '|' + str(chosen_merchant) + '|' + str(merch_lat) + '|' + str(merch_long))
+                print_str = self.customer.replace('\n','') + '|' + t + '|' + str(chosen_merchant) + '|' + str(merch_lat) + '|' + str(merch_long)
+                # print(print_str)
+                df = pd.DataFrame({'temp_str': [print_str]})
+                df[['ssn', 'cc_num', 'first', 'last', 'gender', 'street', 'city', 'state', 'zip', 'lat', 'long', 'city_pop', 'job', 'dob', 'acct_num', 'profile', 'trans_num', 'trans_date', 'trans_time', 'unix_time', 'category', 'amt', 'is_fraud', 'merchant', 'merch_lat', 'merch_long']] = df['temp_str'].str.split('|', 0, expand=True)
+                df.drop(["temp_str"],inplace=True, axis=1)
+                global_df = pd.concat([global_df, df], ignore_index = True, axis = 0)
+                print(global_df.shape)
+
+                
 
             if is_fraud ==1:
-                print(self.customer.replace('\n','') + '|' + t + '|' + str(chosen_merchant) + '|' + str(merch_lat) + '|' + str(merch_long))
+                print_str =self.customer.replace('\n','') + '|' + t + '|' + str(chosen_merchant) + '|' + str(merch_lat) + '|' + str(merch_long)
+                df = pd.DataFrame({'temp_str': [print_str]})
+                df[['ssn', 'cc_num', 'first', 'last', 'gender', 'street', 'city', 'state', 'zip', 'lat', 'long', 'city_pop', 'job', 'dob', 'acct_num', 'profile', 'trans_num', 'trans_date', 'trans_time', 'unix_time', 'category', 'amt', 'is_fraud', 'merchant', 'merch_lat', 'merch_long']] = df['temp_str'].str.split('|', 0, expand=True)
+                df.drop(["temp_str"],inplace=True, axis=1)
+                global_df = pd.concat([global_df, df], ignore_index = True, axis = 0)
+                print(global_df.shape)
+
+
 
             #else:
                 # pass
@@ -179,7 +196,9 @@ if __name__ == '__main__':
     # generate Faker object to calc merchant transaction locations
     fake = Faker()
 
+    column_names = ['ssn', 'cc_num', 'first', 'last', 'gender', 'street', 'city', 'state', 'zip', 'lat', 'long', 'city_pop', 'job', 'dob', 'acct_num', 'profile', 'trans_num', 'trans_date', 'trans_time', 'unix_time', 'category', 'amt', 'is_fraud', 'merchant', 'merch_lat', 'merch_long']
 
+    global_df = pd.DataFrame(columns = column_names)
     # for each customer, if the customer fits this profile
     # generate appropriate number of transactions
     for line in customers[1:]:
@@ -211,7 +230,7 @@ if __name__ == '__main__':
                     is_fraud = 1
                     temp_tx_data = profile.sample_from(is_fraud)
                     fraud_dates = temp_tx_data[3]
-                    cust.print_trans(temp_tx_data,is_fraud, fraud_dates)
+                    cust.print_trans_and_append_df(temp_tx_data,is_fraud, fraud_dates)
                     #parse_index = m.index('profiles/') + 9
                     #m = m[:parse_index] +'fraud_' + m[parse_index:]
 
@@ -222,7 +241,8 @@ if __name__ == '__main__':
                 merch = pd.read_csv('data/merchants.csv', sep='|')
                 is_fraud =0
                 temp_tx_data = profile.sample_from(is_fraud)
-                cust.print_trans(temp_tx_data, is_fraud, fraud_dates)
+                cust.print_trans_and_append_df(temp_tx_data, is_fraud, fraud_dates)
 
 
 
+    global_df.to_csv("./tmp.csv",sep='|',header=True,index=False)

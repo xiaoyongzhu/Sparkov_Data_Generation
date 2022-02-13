@@ -19,3 +19,5 @@ demographics.pyc
 *.pyc
 Notebooks
 .vscode/settings.json
+output/*.csv
+data/merchants.csv
