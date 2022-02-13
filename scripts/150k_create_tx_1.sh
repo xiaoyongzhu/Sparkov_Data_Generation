@@ -7,10 +7,10 @@
 
 #Generate transactions per profile
 
-python datagen_transaction.py /capstone/data_gen/data/customers.csv ./profiles/40_60_bigger_cities.json 1-1-2012 12-31-2015 >> /capstone_A/data_gen/data/40_60_bigger_cities.csv &
-python datagen_transaction.py /capstone/data_gen/data/customers.csv ./profiles/40_60_smaller_cities.json 1-1-2012 12-31-2015 >> /capstone_A/data_gen/data/40_60_smaller_cities.csv &
-python datagen_transaction.py /capstone/data_gen/data/customers.csv ./profiles/all_60_up.json 1-1-2012 12-31-2015 >> /capstone_A/data_gen/data/all_60_up.csv &
-python datagen_transaction.py /capstone/data_gen/data/customers.csv ./profiles/male_30_40_bigger_cities.json 1-1-2012 12-31-2015 >> /capstone_A/data_gen/data/male_30_40_bigger_cities.csv &
+python datagen_transaction.py /capstone/data_gen/data/customers.csv ./profiles/40_60_bigger_cities.json 1-1-2012 12-31-2015 >>/capstone_A/data_gen/data/40_60_bigger_cities.csv &
+python datagen_transaction.py /capstone/data_gen/data/customers.csv ./profiles/40_60_smaller_cities.json 1-1-2012 12-31-2015 >>/capstone_A/data_gen/data/40_60_smaller_cities.csv &
+python datagen_transaction.py /capstone/data_gen/data/customers.csv ./profiles/all_60_up.json 1-1-2012 12-31-2015 >>/capstone_A/data_gen/data/all_60_up.csv &
+python datagen_transaction.py /capstone/data_gen/data/customers.csv ./profiles/male_30_40_bigger_cities.json 1-1-2012 12-31-2015 >>/capstone_A/data_gen/data/male_30_40_bigger_cities.csv &
 
 ##Windows Boxes
 #Generate customer file
@@ -30,4 +30,3 @@ python datagen_transaction.py /capstone/data_gen/data/customers.csv ./profiles/m
 #python datagen_transaction.py C:\Users\Brandon\git\data_generation\data\customers.csv C:\Users\Brandon\git\data_generation\profiles\millenials.json 1-1-2012 12-31-2015 >> C:\Users\Brandon\git\data_generation\data\millenials.csv
 #python datagen_transaction.py C:\Users\Brandon\git\data_generation\data\customers.csv C:\Users\Brandon\git\data_generation\profiles\young_adults.json 1-1-2012 12-31-2015 >> C:\Users\Brandon\git\data_generation\data\young_adults.csv
 exit 0
-

@@ -1,5 +1,5 @@
 ###
-# Generates n merchants per category, to be piped into demographic_data/merchants.csv
+# Generates n merchants per category, to be piped into data/merchants.csv
 # >python static_merchant_generator.py >> ./data/merchants.csv
 ###
 __author__ = 'Brandon Harris - brandonharris.io'

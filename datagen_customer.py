@@ -13,32 +13,8 @@ import json
 from main_config import MainConfig
 
 
-def make_cities():
-    cities = {}
-    f = open('./demographic_data/locations_partitions.csv', 'r').readlines()
-    for line in f:
-        try:
-            cdf, output = line.replace('\n', '').split(',')
-            cities[float(cdf)] = output
-        # header
-        except:
-            pass
-    return cities
 
-
-def make_age_gender_dict():
-    gender_age = {}
-    prev = 0
-    f = open('./demographic_data/age_gender_demographics.csv', 'r').readlines()
-    for line in f:
-        l = line.replace('\n', '').split(',')
-        if l[3] != 'prop':
-            prev += float(l[3])
-            gender_age[prev] = (l[2], float(l[1]))
-    return gender_age
-
-
-class Headers:
+class Headers(object):
     'Store the headers and print to stdout to pipe into csv'
 
     def __init__(self):
@@ -57,7 +33,7 @@ class Headers:
         print(self.headers)
 
 
-class Customer:
+class Customer(object):
     'Randomly generates all the attirubtes for a customer'
 
     def __init__(self):
@@ -150,6 +126,31 @@ class Customer:
               str(self.dob) + '|' +
               str(self.account) + '|' +
               self.profile)
+
+def make_cities():
+    cities = {}
+    f = open('./data/locations_partitions.csv', 'r').readlines()
+    for line in f:
+        try:
+            cdf, output = line.replace('\n', '').split(',')
+            cities[float(cdf)] = output
+        # header
+        except:
+            pass
+    return cities
+
+
+def make_age_gender_dict():
+    gender_age = {}
+    prev = 0
+    f = open('./data/age_gender_demographics.csv', 'r').readlines()
+    for line in f:
+        l = line.replace('\n', '').split(',')
+        if l[3] != 'prop':
+            prev += float(l[3])
+            gender_age[prev] = (l[2], float(l[1]))
+    return gender_age
+
 
 
 def validate():

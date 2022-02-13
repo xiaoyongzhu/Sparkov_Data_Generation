@@ -92,7 +92,7 @@ def create_header(line):
     return headers
 
 
-class Customer:
+class Customer(object):
     def __init__(self, customer, profile):
         self.customer = customer
         self.attrs = self.clean_line(self.customer)
@@ -186,7 +186,6 @@ if __name__ == '__main__':
             profile = profile_weights.Profile(pro, start, end)
             cust = Customer(line, profile)
 
-
             if cust.attrs['profile'] == curr_profile:
                 merch = pd.read_csv('data/merchants.csv', sep='|')
                 is_fraud= 0
@@ -194,7 +193,6 @@ if __name__ == '__main__':
                 fraud_flag = randint(0,100) # set fraud flag here, as we either gen real or fraud, not both for
                                         # the same day.
                 fraud_dates = []
-
 
                 # decide if we generate fraud or not
                 if fraud_flag < 99: #11->25

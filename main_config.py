@@ -6,7 +6,6 @@ class MainConfig:
     def __init__(self, main):
         self.config = self.all_profiles_dicts(main)
 
-
     # convert type to a tuple
     def convert_config_type(self, x):
         if type(x) is dict:
@@ -37,19 +36,6 @@ class MainConfig:
                     self.convert_config_type(main_config[pf][qual])
 
         return all_profiles
-
-    def in_profile(self, person_dict, profile_quals):
-        for pq in profile_quals:
-            if pq == 'age':
-                if self.fits_qual(return_age(person_dict),\
-                             profile_quals[pq]) == False:
-                    return False
-            else:
-                if self.fits_qual(person_dict[pq],\
-                             profile_quals[pq]) == False:
-                    return False
-        return True
-
 
     def fits_qual(self, person_val, range_tuple):
         if type(range_tuple) is list:
