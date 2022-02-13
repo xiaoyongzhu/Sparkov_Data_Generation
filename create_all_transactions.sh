@@ -1,4 +1,4 @@
-
+#!/bin/bash
 python datagen_customer.py 10000 4144 profiles/main_config.json >> /mnt/1k/customers.csv
 
 

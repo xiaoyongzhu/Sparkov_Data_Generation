@@ -1,4 +1,4 @@
-
+#!/bin/bash
 
 ##Linux / OSX Boxes
 #Generate customer file

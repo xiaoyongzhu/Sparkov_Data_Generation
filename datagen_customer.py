@@ -10,8 +10,32 @@ import fileinput
 import random
 from collections import defaultdict
 import json
-import demographics
 from main_config import MainConfig
+
+
+def make_cities():
+    cities = {}
+    f = open('./demographic_data/locations_partitions.csv', 'r').readlines()
+    for line in f:
+        try:
+            cdf, output = line.replace('\n', '').split(',')
+            cities[float(cdf)] = output
+        # header
+        except:
+            pass
+    return cities
+
+
+def make_age_gender_dict():
+    gender_age = {}
+    prev = 0
+    f = open('./demographic_data/age_gender_demographics.csv', 'r').readlines()
+    for line in f:
+        l = line.replace('\n', '').split(',')
+        if l[3] != 'prop':
+            prev += float(l[3])
+            gender_age[prev] = (l[2], float(l[1]))
+    return gender_age
 
 
 class Headers:
@@ -23,8 +47,8 @@ class Headers:
 
     def make_headers(self):
         headers = ''
-        for h in ['ssn', 'cc_num', 'first', 'last', 'gender', 'street', \
-                  'city', 'state', 'zip', 'lat', 'long', 'city_pop', \
+        for h in ['ssn', 'cc_num', 'first', 'last', 'gender', 'street',
+                  'city', 'state', 'zip', 'lat', 'long', 'city_pop',
                   'job', 'dob', 'acct_num', 'profile']:
             headers += h + '|'
         self.headers = headers[:-1]
@@ -61,9 +85,9 @@ class Customer:
         #g_a = age_gender[min(age_gender, key=lambda x:abs(x-random.random()))]
 
         a = np.random.random()
-        c=[]
+        c = []
         for b in age_gender.keys():
-            if b>a:
+            if b > a:
                 c.append(b)
         g_a = age_gender[min(c)]
 
@@ -71,7 +95,8 @@ class Customer:
             dob = fake.date_time_this_century()
 
             # adjust the randomized date to yield the correct age
-            start_age = (date.today() - date(dob.year, dob.month, dob.day)).days / 365.
+            start_age = (date.today() - date(dob.year,
+                         dob.month, dob.day)).days / 365.
             dob_year = dob.year - int(g_a[1] - int(start_age))
 
             # since the year is adjusted, sometimes Feb 29th won't be a day
@@ -94,12 +119,12 @@ class Customer:
         for pro in all_profiles:
             # -1 represents infinity
             if self.gender in all_profiles[pro]['gender'] and \
-                            age >= all_profiles[pro]['age'][0] and \
-                    (age < all_profiles[pro]['age'][1] or \
-                                 all_profiles[pro]['age'][1] == -1) and \
-                            city_pop >= all_profiles[pro]['city_pop'][0] and \
-                    (city_pop < all_profiles[pro]['city_pop'][1] or \
-                                 all_profiles[pro]['city_pop'][1] == -1):
+                age >= all_profiles[pro]['age'][0] and \
+                    (age < all_profiles[pro]['age'][1] or
+                     all_profiles[pro]['age'][1] == -1) and \
+                city_pop >= all_profiles[pro]['city_pop'][0] and \
+                    (city_pop < all_profiles[pro]['city_pop'][1] or
+                     all_profiles[pro]['city_pop'][1] == -1):
                 match.append(pro)
         if match == []:
             match.append('leftovers.json')
@@ -114,16 +139,16 @@ class Customer:
         return match[0]
 
     def print_customer(self):
-        print(str(self.ssn) + '|' + \
-              str(self.cc) + '|' + \
-              self.first + '|' + \
-              self.last + '|' + \
-              self.gender + '|' + \
-              self.street + '|' + \
-              self.addy + '|' + \
-              self.job + '|' + \
-              str(self.dob) + '|' + \
-              str(self.account) + '|' + \
+        print(str(self.ssn) + '|' +
+              str(self.cc) + '|' +
+              self.first + '|' +
+              self.last + '|' +
+              self.gender + '|' +
+              self.street + '|' +
+              self.addy + '|' +
+              self.job + '|' +
+              str(self.dob) + '|' +
+              str(self.account) + '|' +
               self.profile)
 
 
@@ -168,8 +193,8 @@ if __name__ == '__main__':
     num_cust, seed_num, main = validate()
 
     # from demographics module
-    cities = demographics.make_cities()
-    age_gender = demographics.make_age_gender_dict()
+    cities = make_cities()
+    age_gender = make_age_gender_dict()
 
     fake = Faker()
     Faker.seed(seed_num)
