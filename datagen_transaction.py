@@ -101,7 +101,7 @@ class Customer(object):
         self.fraud_dates = []
 
     def print_trans_and_append_df(self, trans, is_fraud, fraud_dates):
-        global global_df
+        global global_transaction_df
         is_traveling = trans[1]
         travel_max = trans[2]
 
@@ -143,8 +143,8 @@ class Customer(object):
                 df = pd.DataFrame({'temp_str': [print_str]})
                 df[['ssn', 'cc_num', 'first', 'last', 'gender', 'street', 'city', 'state', 'zip', 'lat', 'long', 'city_pop', 'job', 'dob', 'acct_num', 'profile', 'trans_num', 'trans_date', 'trans_time', 'unix_time', 'category', 'amt', 'is_fraud', 'merchant', 'merch_lat', 'merch_long']] = df['temp_str'].str.split('|', 0, expand=True)
                 df.drop(["temp_str"],inplace=True, axis=1)
-                global_df = pd.concat([global_df, df], ignore_index = True, axis = 0)
-                print(global_df.shape)
+                global_transaction_df = pd.concat([global_transaction_df, df], ignore_index = True, axis = 0)
+                print(global_transaction_df.shape)
 
                 
 
@@ -153,8 +153,8 @@ class Customer(object):
                 df = pd.DataFrame({'temp_str': [print_str]})
                 df[['ssn', 'cc_num', 'first', 'last', 'gender', 'street', 'city', 'state', 'zip', 'lat', 'long', 'city_pop', 'job', 'dob', 'acct_num', 'profile', 'trans_num', 'trans_date', 'trans_time', 'unix_time', 'category', 'amt', 'is_fraud', 'merchant', 'merch_lat', 'merch_long']] = df['temp_str'].str.split('|', 0, expand=True)
                 df.drop(["temp_str"],inplace=True, axis=1)
-                global_df = pd.concat([global_df, df], ignore_index = True, axis = 0)
-                print(global_df.shape)
+                global_transaction_df = pd.concat([global_transaction_df, df], ignore_index = True, axis = 0)
+                print(global_transaction_df.shape)
 
 
 
@@ -198,7 +198,12 @@ if __name__ == '__main__':
 
     column_names = ['ssn', 'cc_num', 'first', 'last', 'gender', 'street', 'city', 'state', 'zip', 'lat', 'long', 'city_pop', 'job', 'dob', 'acct_num', 'profile', 'trans_num', 'trans_date', 'trans_time', 'unix_time', 'category', 'amt', 'is_fraud', 'merchant', 'merch_lat', 'merch_long']
 
-    global_df = pd.DataFrame(columns = column_names)
+    global_transaction_df = pd.DataFrame(columns = column_names)
+
+
+    column_names = ['ssn', 'cc_num', 'first', 'last', 'gender', 'street', 'city', 'state', 'zip', 'lat', 'long', 'city_pop', 'job', 'dob', 'acct_num', 'profile', 'trans_num', 'trans_date', 'trans_time', 'unix_time', 'category', 'amt', 'is_fraud', 'merchant', 'merch_lat', 'merch_long']
+
+    global_transaction_df = pd.DataFrame(columns = column_names)
     # for each customer, if the customer fits this profile
     # generate appropriate number of transactions
     for line in customers[1:]:
@@ -245,4 +250,4 @@ if __name__ == '__main__':
 
 
 
-    global_df.to_csv("./tmp.csv",sep='|',header=True,index=False)
+    global_transaction_df.to_csv("./tmp.csv",sep='|',header=True,index=False)
