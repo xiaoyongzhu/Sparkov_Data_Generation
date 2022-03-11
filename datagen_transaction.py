@@ -278,12 +278,12 @@ if __name__ == '__main__':
 
     global_transaction_df_in_store['payment_type']='in_store'
     global_transaction_df_in_store.to_csv(
-        "./in_store_transaction.csv", sep='|', header=True, index=False)
+        "./output/in_store_transaction.csv", sep='|', header=True, index=False)
 
     global_transaction_df_online['payment_type']='online'
     global_transaction_df_online.drop(["temp_str", 'street', 'city', 'state', 'zip', 'lat', 'long', 'city_pop',  'profile','is_fraud','merch_lat','merch_long'], inplace=True, axis=1)
     global_transaction_df_online.to_csv(
-        "./online_transaction.csv", sep='|', header=True, index=False)
+        "./output/online_transaction.csv", sep='|', header=True, index=False)
 
 
     # generate fake embeddings
@@ -294,4 +294,4 @@ if __name__ == '__main__':
         user_embedding_df = pd.concat(
             [user_embedding_df, df], ignore_index=True, axis=0)
     user_embedding_df.to_csv(
-        "./user_embedding.csv", sep='|', header=True, index=False)
+        "./output/user_embedding.csv", sep='|', header=True, index=False)
