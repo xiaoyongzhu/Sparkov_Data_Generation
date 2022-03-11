@@ -279,11 +279,13 @@ if __name__ == '__main__':
     global_transaction_df_in_store['payment_type']='in_store'
     global_transaction_df_in_store.to_csv(
         "./output/in_store_transaction.csv", sep='|', header=True, index=False)
+    global_transaction_df_in_store.to_parquet("./output/in_store_transaction.parquet")
 
     global_transaction_df_online['payment_type']='online'
     global_transaction_df_online.drop(["temp_str", 'street', 'city', 'state', 'zip', 'lat', 'long', 'city_pop',  'profile','is_fraud','merch_lat','merch_long'], inplace=True, axis=1)
     global_transaction_df_online.to_csv(
         "./output/online_transaction.csv", sep='|', header=True, index=False)
+    global_transaction_df_online.to_parquet("./output/online_transaction.parquet")
 
 
     # generate fake embeddings
@@ -295,3 +297,4 @@ if __name__ == '__main__':
             [user_embedding_df, df], ignore_index=True, axis=0)
     user_embedding_df.to_csv(
         "./output/user_embedding.csv", sep='|', header=True, index=False)
+    user_embedding_df.to_parquet("./output/user_embedding.parquet")
