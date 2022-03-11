@@ -35,28 +35,4 @@ class MainConfig:
                     self.convert_config_type(main_config[pf][qual])
 
         return all_profiles
-
-    def fits_qual(self, person_val, range_tuple):
-        if type(range_tuple) is list:
-            # matching value in string list 
-            # (e.g. ['M','F'])
-            if unicode(person_val) in range_tuple or \
-                str(person_val) in range_tuple:
-                return True
-            # doesn't match
-            else:
-                return False
-
-        elif type(range_tuple) is unicode or type(range_tuple) is str:
-            if unicode(person_val) == unicode(range_tuple):
-                return True
-            # doesn't match
-            else:
-                return False
-
-        # range
-        if float(person_val) >= float(range_tuple[0]) and\
-            float(person_val) <= float(range_tuple[1]):
-                return True
-        else:
-            return False        
+    
