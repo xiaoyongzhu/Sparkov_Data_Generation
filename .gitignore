@@ -8,8 +8,6 @@
 .idea/inspectionProfiles/Project_Default.xml
 *.xml
 *.pyc
-data/*.csv
-!data/merchants.csv
 *.xml
 *.pyc
 *.pyc
