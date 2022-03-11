@@ -3,10 +3,9 @@
 # >python static_merchant_generator.py >> ./data/merchants.csv
 ###
 __author__ = 'Brandon Harris - brandonharris.io'
-from faker import Faker
 from faker import Factory
 
-n = 500
+merchants_num = 50
 
 fake = Factory.create('en_US')
 
@@ -30,6 +29,6 @@ category_list = ["gas_transport",
 print(header)
 
 for c in category_list:
-    for _ in range(0, n):
+    for _ in range(0, merchants_num):
         print(c + "|" +  fake.company())
         # print(c + "|" + 'fraud_' + fake.company())

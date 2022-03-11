@@ -191,7 +191,7 @@ def validate():
 
 if __name__ == '__main__':
     # read and validate stdin
-    num_cust, seed_num, main = validate()
+    num_customer, seed_num, main = validate()
 
     # from demographics module
     cities = make_cities()
@@ -205,5 +205,5 @@ if __name__ == '__main__':
     # turn all profiles into dicts to work with
     all_profiles = MainConfig(main).config
 
-    for _ in range(num_cust):
+    for _ in range(num_customer):
         Customer()

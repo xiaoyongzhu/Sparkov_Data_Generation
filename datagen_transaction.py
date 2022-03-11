@@ -5,10 +5,9 @@ import datetime
 from datetime import date
 from random import randint
 from faker import Faker
-
+import numpy as np
 
 import profile_weights
-
 
 def get_user_input():
     # convert date to datetime object
@@ -86,12 +85,11 @@ class Customer(object):
         self.fraud_dates = []
 
     def print_trans_and_append_df(self, trans, is_fraud, fraud_dates):
-        global global_transaction_df
+        global global_transaction_df_in_store
         is_traveling = trans[1]
         travel_max = trans[2]
 
-        for t in trans[0]:
-
+        for i, t in enumerate(trans[0]):
             # Get transaction location details to generate appropriate merchant record
             cust_state = cust.attrs['state']
             groups = t.split('|')
@@ -130,9 +128,9 @@ class Customer(object):
                 df[['ssn', 'cc_num', 'first', 'last', 'gender', 'street', 'city', 'state', 'zip', 'lat', 'long', 'city_pop', 'job', 'dob', 'acct_num', 'profile', 'trans_num',
                     'trans_date', 'trans_time', 'unix_time', 'category', 'amt', 'is_fraud', 'merchant', 'merch_lat', 'merch_long']] = df['temp_str'].str.split('|', 0, expand=True)
                 df.drop(["temp_str"], inplace=True, axis=1)
-                global_transaction_df = pd.concat(
-                    [global_transaction_df, df], ignore_index=True, axis=0)
-                print(global_transaction_df.shape)
+                df['recent_visited_states'] = [[fake.state_abbr() for _ in range(randint(1,4))]]
+                global_transaction_df_in_store = pd.concat(
+                    [global_transaction_df_in_store, df], ignore_index=True, axis=0)
 
             if is_fraud == 1:
                 print_str = self.customer.replace('\n', '') + '|' + t + '|' + str(
@@ -141,12 +139,61 @@ class Customer(object):
                 df[['ssn', 'cc_num', 'first', 'last', 'gender', 'street', 'city', 'state', 'zip', 'lat', 'long', 'city_pop', 'job', 'dob', 'acct_num', 'profile', 'trans_num',
                     'trans_date', 'trans_time', 'unix_time', 'category', 'amt', 'is_fraud', 'merchant', 'merch_lat', 'merch_long']] = df['temp_str'].str.split('|', 0, expand=True)
                 df.drop(["temp_str"], inplace=True, axis=1)
-                global_transaction_df = pd.concat(
-                    [global_transaction_df, df], ignore_index=True, axis=0)
-                print(global_transaction_df.shape)
+                df['recent_visited_states'] = [[fake.state_abbr() for _ in range(randint(1,4))]]
+                global_transaction_df_in_store = pd.concat(
+                    [global_transaction_df_in_store, df], ignore_index=True, axis=0)
 
             # else:
                 # pass
+
+
+    def print_trans_and_append_df_online(self, trans, is_fraud, fraud_dates):
+        global global_transaction_df_online
+        is_traveling = trans[1]
+        travel_max = trans[2]
+
+        for i, t in enumerate(trans[0]):
+            # Get transaction location details to generate appropriate merchant record
+            cust_state = cust.attrs['state']
+            groups = t.split('|')
+            trans_cat = groups[4]
+            merch_filtered = merch[merch['category'] == trans_cat]
+            random_row = merch_filtered.loc[random.sample(
+                list(merch_filtered.index), 1)]
+            # sw added list
+            chosen_merchant = random_row.iloc[0]['merchant_name']
+
+            cust_lat = cust.attrs['lat']
+            cust_long = cust.attrs['long']
+
+            if is_traveling:
+                # hacky math.. assuming ~70 miles per 1 decimal degree of lat/long
+                # sorry for being American, you're on your own for kilometers.
+                rad = (float(travel_max) / 100) * 1.43
+
+                # geo_coordinate() uses uniform distribution with lower = (center-rad), upper = (center+rad)
+                merch_lat = fake.coordinate(center=float(cust_lat), radius=rad)
+                merch_long = fake.coordinate(
+                    center=float(cust_long), radius=rad)
+            else:
+                # otherwise not traveling, so use 1 decimial degree (~70mile) radius around home address
+                rad = 1
+                merch_lat = fake.coordinate(center=float(cust_lat), radius=rad)
+                merch_long = fake.coordinate(
+                    center=float(cust_long), radius=rad)
+
+            # if cust.attrs['profile'] == "male_30_40_smaller_cities.json":
+            print_str = self.customer.replace('\n', '') + '|' + t + '|' + str(
+                chosen_merchant) + '|' + str(merch_lat) + '|' + str(merch_long)
+            # print(print_str)
+            df = pd.DataFrame({'temp_str': [print_str]})
+            df[['ssn', 'cc_num', 'first', 'last', 'gender', 'street', 'city', 'state', 'zip', 'lat', 'long', 'city_pop', 'job', 'dob', 'acct_num', 'profile', 'trans_num',
+                'trans_date', 'trans_time', 'unix_time', 'category', 'amt', 'is_fraud', 'merchant', 'merch_lat', 'merch_long']] = df['temp_str'].str.split('|', 0, expand=True)
+            df['ip_address'] = fake.ipv4()
+            global_transaction_df_online = pd.concat(
+                [global_transaction_df_online, df], ignore_index=True, axis=0)
+
+
 
     def clean_line(self, line):
         # separate into a list of attrs
@@ -164,20 +211,6 @@ if __name__ == '__main__':
     # curr_profile is female_30_40_smaller_cities.json , for fraud as well as non fraud
     # profile_name is ./profiles/fraud_female_30_40_bigger_cities.json for fraud.
     customers, pro, pro_fraud, curr_profile, curr_fraud_profile, start, end, profile_name = get_user_input()
-    # if curr_profile == "male_30_40_smaller_cities.json":
-    #   inputCat = "travel"
-    # elif curr_profile == "female_30_40_smaller_cities.json":
-    #    inputCat = "pharmacy"
-    # else:
-    #    inputCat = "misc_net"
-
-    # takes the customers headers and appends
-    # transaction headers and returns/prints
-    # if profile_name[11:][:6] == 'fraud_':
-    # read merchant.csv used for transaction record
-    #    merch = pd.read_csv('./data/merchants_fraud.csv' , sep='|')
-    # else:
-    #    merch = pd.read_csv('./data/merchants.csv', sep='|')
 
     headers = create_header(customers[0])
 
@@ -187,7 +220,12 @@ if __name__ == '__main__':
     column_names = ['ssn', 'cc_num', 'first', 'last', 'gender', 'street', 'city', 'state', 'zip', 'lat', 'long', 'city_pop', 'job', 'dob', 'acct_num',
                     'profile', 'trans_num', 'trans_date', 'trans_time', 'unix_time', 'category', 'amt', 'is_fraud', 'merchant', 'merch_lat', 'merch_long']
 
-    global_transaction_df = pd.DataFrame(columns=column_names)
+    global_transaction_df_in_store = pd.DataFrame(columns=column_names)
+
+    online_purchase_column_names = ['ssn', 'cc_num', 'first', 'last', 'gender', 'street', 'city', 'state', 'zip', 'lat', 'long', 'city_pop', 'job', 'dob', 'acct_num',
+                    'profile', 'trans_num', 'trans_date', 'trans_time', 'unix_time', 'category', 'amt', 'is_fraud', 'merchant', 'merch_lat', 'merch_long']
+
+    global_transaction_df_online = pd.DataFrame(columns=online_purchase_column_names)
     # for each customer, if the customer fits this profile
     # generate appropriate number of transactions
     for line in customers[1:]:
@@ -233,6 +271,27 @@ if __name__ == '__main__':
             is_fraud = 0
             temp_tx_data = profile.sample_from(is_fraud)
             cust.print_trans_and_append_df(temp_tx_data, is_fraud, fraud_dates)
+            cust.print_trans_and_append_df_online(temp_tx_data, is_fraud, fraud_dates)
 
-    global_transaction_df.to_csv(
-        "./tmp.csv", sep='|', header=True, index=False)
+
+            # we also generate online transactions here. Assuming the online transactions don't have labels for fraud
+
+    global_transaction_df_in_store['payment_type']='in_store'
+    global_transaction_df_in_store.to_csv(
+        "./in_store_transaction.csv", sep='|', header=True, index=False)
+
+    global_transaction_df_online['payment_type']='online'
+    global_transaction_df_online.drop(["temp_str", 'street', 'city', 'state', 'zip', 'lat', 'long', 'city_pop',  'profile','is_fraud','merch_lat','merch_long'], inplace=True, axis=1)
+    global_transaction_df_online.to_csv(
+        "./online_transaction.csv", sep='|', header=True, index=False)
+
+
+    # generate fake embeddings
+    user_embedding_df = pd.DataFrame(columns=["ssn", "embedding"])
+    unique_ssn = global_transaction_df_in_store['ssn'].unique()
+    for ssn in unique_ssn:
+        df = pd.DataFrame({'ssn': ssn, "embedding": [np.random.random((5,5)).tolist()] })
+        user_embedding_df = pd.concat(
+            [user_embedding_df, df], ignore_index=True, axis=0)
+    user_embedding_df.to_csv(
+        "./user_embedding.csv", sep='|', header=True, index=False)
